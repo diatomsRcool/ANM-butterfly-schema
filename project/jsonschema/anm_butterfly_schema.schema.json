@@ -1,0 +1,161 @@
+{
+    "$defs": {
+        "NamedThing": {
+            "additionalProperties": false,
+            "description": "A generic grouping for any identifiable entity",
+            "properties": {
+                "description": {
+                    "description": "A human-readable description for a thing",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "A unique identifier for a thing",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "A human-readable name for a thing",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "id"
+            ],
+            "title": "NamedThing",
+            "type": "object"
+        },
+        "PersonStatus": {
+            "description": "",
+            "enum": [
+                "ALIVE",
+                "DEAD",
+                "UNKNOWN"
+            ],
+            "title": "PersonStatus",
+            "type": "string"
+        },
+        "Survey": {
+            "additionalProperties": false,
+            "description": "Represents a Survey",
+            "properties": {
+                "age_in_years": {
+                    "description": "Number of years since birth",
+                    "type": "integer"
+                },
+                "birth_date": {
+                    "description": "Date on which a person is born",
+                    "format": "date",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "A human-readable description for a thing",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "A unique identifier for a thing",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "A human-readable name for a thing",
+                    "type": "string"
+                },
+                "primary_email": {
+                    "description": "The main email address of a person",
+                    "pattern": "^\\S+@[\\S+\\.]+\\S+",
+                    "type": "string"
+                },
+                "vital_status": {
+                    "$ref": "#/$defs/PersonStatus",
+                    "description": "living or dead status"
+                }
+            },
+            "required": [
+                "id"
+            ],
+            "title": "Survey",
+            "type": "object"
+        },
+        "SurveyCollection": {
+            "additionalProperties": false,
+            "description": "A holder for Survey objects",
+            "properties": {
+                "entries": {
+                    "additionalProperties": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Survey__identifier_optional"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "type": "object"
+                }
+            },
+            "title": "SurveyCollection",
+            "type": "object"
+        },
+        "Survey__identifier_optional": {
+            "additionalProperties": false,
+            "description": "Represents a Survey",
+            "properties": {
+                "age_in_years": {
+                    "description": "Number of years since birth",
+                    "type": "integer"
+                },
+                "birth_date": {
+                    "description": "Date on which a person is born",
+                    "format": "date",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "A human-readable description for a thing",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "A unique identifier for a thing",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "A human-readable name for a thing",
+                    "type": "string"
+                },
+                "primary_email": {
+                    "description": "The main email address of a person",
+                    "pattern": "^\\S+@[\\S+\\.]+\\S+",
+                    "type": "string"
+                },
+                "vital_status": {
+                    "$ref": "#/$defs/PersonStatus",
+                    "description": "living or dead status"
+                }
+            },
+            "required": [],
+            "title": "Survey",
+            "type": "object"
+        }
+    },
+    "$id": "https://w3id.org/ANM-Butterfly-Network/ANM-butterfly-schema",
+    "$schema": "https://json-schema.org/draft/2019-09/schema",
+    "additionalProperties": true,
+    "description": "A holder for Survey objects",
+    "metamodel_version": "1.7.0",
+    "properties": {
+        "entries": {
+            "additionalProperties": {
+                "anyOf": [
+                    {
+                        "$ref": "#/$defs/Survey__identifier_optional"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ]
+            },
+            "type": "object"
+        }
+    },
+    "title": "ANM-butterfly-schema",
+    "type": "object",
+    "version": null
+}
