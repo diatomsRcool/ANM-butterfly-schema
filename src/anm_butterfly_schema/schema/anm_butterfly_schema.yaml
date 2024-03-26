@@ -15,6 +15,10 @@ prefixes:
   schema: http://schema.org/
   PATO: http://purl.obolibrary.org/obo/PATO_
   example: https://example.org/
+  dwc:
+  ENVO:
+  OBA:
+  UBERON:
 default_prefix: anm_butterfly_schema
 default_range: string
 
@@ -35,15 +39,18 @@ classes:
   Survey:
     is_a: NamedThing
     description: >-
-      Represents a Survey
+      A specific data collection event
     slots:
-      - primary_email
-      - birth_date
-      - age_in_years
-      - vital_status
-    slot_usage:
-      primary_email:
-        pattern: "^\\S+@[\\S+\\.]+\\S+"
+      - has_route
+      - length_in_meters
+      - start_dateTime
+      - end_dateTime
+      - duration_in_minutes
+      - participants
+      - party_hours
+      - sky
+      - temp
+      - wind
 
   SurveyCollection:
     tree_root: true
@@ -54,6 +61,140 @@ classes:
         range: Survey
         multivalued: true
         inlined: true
+
+  Program:
+    is_a: NamedThing
+    description: >-
+      An organized group for regularly collecting butterfly observations
+    slots:
+      - has_protocol
+
+  Site:
+    is_a: NamedThing
+    description: >-
+      A general geographic area where programs collect data
+    slots:
+      - has_program
+      - county
+      - land_owner
+
+  Route:
+    is_a: NamedThing
+    description: >-
+      Specific path or transect that is repeatedly followed to collect butterfly data
+    slots:
+      - has_site
+      - geolocation
+    slot_usage:
+      geolocation:
+        pattern: "" #WKT string pattern
+
+  Protocol:
+    is_a: NamedThing
+    description: >-
+      Method for data collection and representation
+    slots:
+      - weather_method
+      - site_placement
+      - taxon_scope
+      - search_area
+      - duration
+      - complete_list
+      - zeroes_reported
+      - valid_start_date
+      - valid_end_date
+      - abundance_metric
+      - habitat_designation
+
+  Observation:
+    is_a: NamedThing
+    description: >-
+      observation of an organism during a survey or other event
+    slots:
+      - has_survey
+      - taxon_name
+      - count
+      - has_voucher
+      - lifestage
+      - abundance
+      - interaction
+    attributes:
+      type:
+        designates_type: true
+        range: string
+  SurveyObservation:
+    is_a: Observation
+  SpecimenObservation:
+    is_a: Observation
+    slots:
+      - geolocation
+
+  Source:
+    is_a: NamedThing
+    description:
+    slots:
+      - copyright_status
+      - geographic_scope
+
+  TraitRecord:
+    is_a: NamedThing
+    description:
+    slots:
+      - has_source
+      - geographic_scope
+      - taxonomic_scope
+      - date_published
+      - trait (get list of traits)
+
+  DerivedTrait:
+    is_a: Trait?
+    description:
+    slots:
+      - source_list
+      - trait_id
+      - maximum_value_male
+      - minimum_value_male
+      - maximum_value_female
+      - minimum_value_female
+      - mean_value_male
+      - mean_value_female
+      - single_value_male
+      - single_value_female
+      - unit
+      - taxon_id
+      - geographic_scope
+      - time_range
+
+  Voucher:
+    is_a: NamedThing
+    description: specimen or photograph
+    slots:
+
+  Taxon:
+    is_a: NamedThing
+    description:
+    slots:
+      - has_program
+      - has_CoL
+      - has_ITIS
+      - has_Lamas
+
+  Interaction:
+    slots:
+      - subject
+      - object
+      - interaction_type
+
+  TaxonInteraction:
+    is_a: Interaction
+    slot_usage:
+      subject:
+        range: Taxon
+      object:
+        range: Taxon
+    slots:
+      - has_survey
+      - has_source
 
 slots:
   id:
@@ -67,22 +208,134 @@ slots:
   description:
     slot_uri: schema:description
     description: A human-readable description for a thing
-  primary_email:
-    slot_uri: schema:email
-    description: The main email address of a person
-  birth_date:
-    slot_uri: schema:birthDate
-    range: date
-    description: Date on which a person is born
-  age_in_years:
+  has_route:
+    range: Route
+    description: The route to which a survey belongs
+  length_in_meters:
+    slot_uri:
+    range: float
+    unit:
+      ucum_code: m
+    description: Length of the survey in meters
+  start_dateTime:
+    range: datetime
+    description: The date and time that the survey started
+  end_dateTime:
+    range: datetime
+    description: The date and time that the survey ended
+  duration_in_minutes:
+    slot_uri:
+    range: float
+    unit:
+      ucum_code: min
+    description: The duration of the survey in minutes
+  participants:
+    range: list
+    multivalued: true
+    inlined_as_list: true
+    description: List of names of people who collected data during the survey - also need their roles
+  party_hours:
+    range: float
+    description: Total number of hours spent on survey - add all the time spent by all participants
+  sky:
+    range: SkyStatus
+    description: Observation of sky conditions at time of survey
+  wind:
+    range: WindStatus
+    description: Observation of wind conditions at time of survey
+  temp:
+    range: TempStatus
+    description: Obseration of temperature conditions at time of survey
+  has_protocol:
+    range: Protocol
+    description: Identifier linking a protocol to a program
+  has_program:
+    range: Program
+    description: Identifier linking a site to a program
+  county:
+    slot_uri:
+    range:
+    description: 
+  land_owner:
+    range: string
+    description: Name of the person or organization that owns the land 
+  has_site:
+    range: Site
+    description:
+  geolocation:
+    range:
+    description: WKT string - can be polygon, line, or point
+  weather_method:
+    range: WeatherMethod
+    description:
+  site_placement:
+    range: SitePlacement
+    description:
+  taxon_scope:
+    range: 
+    multivalued: true
+    inlined_as_list: true
+    description:
+  search_area:
+    range: polygon
+    description:
+  duration:
+    range: DurationEnum
+    description:
+  complete_list:
+    range: boolean
+    description:
+  zeroes_reported:
+    range: boolean
+    description:
+  valid_start_date:
+    range: dateTime
+    description: First date and time when the protocol was being used
+  valid_end_date:
+    range: dateTime
+    description: Last date and time when the protocol was being used
+  abundance_metric:
+    range: AbundanceMetric
+    description:
+  habitat_designation:
+    slot_uri: envo
+    range: 
+    description:
+  has_survey:
+    range: Survey
+    description: 
+  taxon_name: #do i need to represent the taxon name work in LinkML too?
+    range:
+    description:
+  count:
     range: integer
-    description: Number of years since birth
-  vital_status:
-    range: PersonStatus
-    description: living or dead status
+    minimum_value: 0
+    description:
+  has_voucher:
+    range: Voucher
+    description:
+  lifestage:
+    slot_uri: uberon
+    range: LifeStage
+    description:
+  abundance:
+   range: AbundanceEnum
+   description:
+  interaction: #need to think about this more
+    range:
+    description:
+  has_CoL:
+    range: CoL
+    description:
+  has_ITIS:
+    range: ITIS
+    description:
+  has_Lamas:
+    range: Lamas
+    description:
 
 enums:
-  PersonStatus:
+  SkyStatus:
     permissible_values:
       ALIVE:
         description: the person is living
@@ -94,3 +347,34 @@ enums:
         description: the vital status is not known
         todos:
           - map this to an ontology
+  WindStatus:
+    permissible_values:
+  TempStatus:
+    permissible_values:
+  SitePlacement:
+    permissible_values:
+      RANDOMIZED:
+      HAPHAZARD:
+      DELIBERATE:
+  DurationEnum:
+    permissible_values:
+      VARIABLE:
+      FIXED:
+  AbundanceMetric:
+    permissible_values:
+      PRESENCE/ABSENCE:
+      PRESENCEONLY:
+      COUNTS:
+      CATEGORIES:
+  AbundanceEnum:
+    permissible_values:
+      ABUNDANT:
+      COMMON:
+      RARE:
+      PRESENT:
+  LifeStage:
+    permissible_values:
+      EGG:
+      LARVA:
+      PUPA:
+      ADULT:
